@@ -1,0 +1,12 @@
+name: flutter_perf_lints_example
+description: Deliberate violations that every flutter_perf_lints rule reports.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.0.0

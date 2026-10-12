@@ -1,0 +1,6 @@
+include: ../analysis_options.yaml
+
+linter:
+  rules:
+    # test_reflective_loader discovers test cases by their `test_` prefix.
+    non_constant_identifier_names: false

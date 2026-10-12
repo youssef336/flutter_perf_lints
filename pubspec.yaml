@@ -1,0 +1,29 @@
+name: flutter_perf_lints
+description: >-
+  Analyzer plugin that flags Flutter performance and resource problems
+  (undisposed controllers, full-size image decodes, eager lists, animated
+  Opacity, large setState rebuilds, heavy work in build) in the IDE and in
+  dart analyze.
+version: 0.1.0
+repository: https://github.com/youssef336/flutter_perf_lints
+issue_tracker: https://github.com/youssef336/flutter_perf_lints/issues
+topics:
+  - lints
+  - analyzer
+  - flutter
+  - performance
+
+environment:
+  # analyzer 14.5 (pinned by analysis_server_plugin 0.3.24) requires Dart 3.11.
+  sdk: ^3.11.0
+
+dependencies:
+  analysis_server_plugin: ^0.3.24
+  analyzer: ^14.5.0
+  analyzer_plugin: ^0.14.18
+
+dev_dependencies:
+  analyzer_testing: ^0.4.3
+  lints: ^6.1.0
+  test: ^1.33.0
+  test_reflective_loader: ^0.6.0

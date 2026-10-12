@@ -1,0 +1,6 @@
+analyzer:
+  exclude:
+    - build/**
+plugins:
+  flutter_perf_lints:
+    path: ..
