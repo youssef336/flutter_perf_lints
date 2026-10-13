@@ -1,3 +1,5 @@
+<p align="center"><a href="README.ar.md">العربية</a></p>
+
 <h1 align="center">Flutter Perf Lints</h1>
 
 <p align="center">
@@ -5,6 +7,7 @@
 </p>
 
 <p align="center">
+  <a href="https://pub.dev/packages/flutter_perf_lints"><img src="https://img.shields.io/pub/v/flutter_perf_lints?style=for-the-badge&logo=dart&label=pub.dev" alt="pub.dev"/></a>
   <img src="https://img.shields.io/badge/Dart-3.11%2B-0175C2?style=for-the-badge&logo=dart&logoColor=white" alt="Dart 3.11+">
   <img src="https://img.shields.io/badge/Flutter-3.41%2B-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter">
   <img src="https://img.shields.io/badge/analyzer-plugin-2ea44f?style=for-the-badge" alt="Analyzer plugin">
@@ -12,7 +15,7 @@
   <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="MIT">
 </p>
 
-> **English summary.** `flutter_perf_lints` is an analyzer plugin built on the **official Dart
+> **Summary.** `flutter_perf_lints` is an analyzer plugin built on the **official Dart
 > analyzer plugin system** (`analysis_server_plugin`, enabled from the top-level `plugins:` section of
 > `analysis_options.yaml`; no `custom_lint`, no extra dev dependency, no separate CLI). Its seven rules
 > show up in the IDE and in `dart analyze`: undisposed controllers / focus nodes / subscriptions /
@@ -22,92 +25,68 @@
 > Three rules ship IDE quick fixes. Rules match Flutter types by name, so they keep working on partially
 > resolved code, and every rule is unit-tested with `analyzer_testing`.
 
-<div dir="rtl">
+A lints package that catches Flutter performance and memory problems **while you type**: a controller
+you forgot to `dispose`, a 4000px image decoded just to be shown at 48px, a list that builds all of
+its items at once, an `Opacity` rebuilt every frame, and a `setState` that rebuilds a whole screen
+because one number changed. The warnings show up in the IDE and in `dart analyze`, and you don't
+add anything to `pubspec.yaml`.
 
-باكدج lints بتمسك مشاكل الأداء والذاكرة في Flutter **وإنت بتكتب**: controller نسيت تعمله dispose،
-صورة 4000px بتتفك عشان تظهر 48px، ليستة بتبني كل العناصر مرة واحدة، `Opacity` بتتبني كل frame،
-و`setState` بيعيد بناء شاشة كاملة عشان رقم واحد اتغير. التحذيرات بتظهر في الـ IDE وفي `dart analyze`،
-ومن غير ما تضيف أي حاجة لـ `pubspec.yaml`.
+## ✨ What it catches
 
-## ✨ بتمسك إيه
-
-| القاعدة | بتمسك إيه | الحل | Quick fix |
+| Rule | What it catches | Fix | Quick fix |
 |---|---|---|---|
-| `undisposed_controller` ⚠️ | `AnimationController`، `TextEditingController`، `ScrollController`، `PageController`، `TabController`، `FocusNode`، `ValueNotifier`/`ChangeNotifier`، `StreamSubscription`، `Timer` اتعملوا جوه الـ `State` ومحدش عملهم `dispose()`/`cancel()` | اقفله في `dispose()` | ✅ بيضيف السطر (وبيعمل `dispose()` لو مش موجودة) |
-| `image_without_cache_size` | `Image.network/asset/file/memory` من غير `cacheWidth`/`cacheHeight`، و`NetworkImage(...)` مش ملفوفة في `ResizeImage` | فك الصورة على المقاس اللي هتظهر بيه | ✗ |
-| `prefer_list_builder` | `ListView(children:)`/`GridView(children:)`، أو `Column`/`Row` جوه `SingleChildScrollView`، والـ children جايين من `.map(...)` أو `List.generate` أو `for` | `ListView.builder` / `GridView.builder` | ✅ لشكل `ListView(children: xs.map(...).toList())` |
-| `avoid_animated_opacity_widget` | `Opacity` قيمتها `animation.value`، أو جوه `builder` بتاع `AnimatedBuilder` | `FadeTransition` | ✗ |
-| `prefer_riverpod_select` | `final s = ref.watch(p);` وبعدين بتقرا `s.count` بس | `ref.watch(p.select((v) => v.count))` | ✅ |
-| `avoid_setstate_large_subtree` | `setState` في `State` الـ `build` بتاعها أكتر من 60 سطر أو أكتر من 25 widget | `ValueNotifier` + `ValueListenableBuilder`، أو widget أصغر | ✗ |
-| `avoid_heavy_work_in_build` | جوه `build`: `jsonDecode`، `RegExp(...)`، `DateFormat(...)`، `NumberFormat(...)`، `.sort()`، `readAsStringSync` وأخواتها | احسبها مرة واحدة (initState، field، `static final`، provider) | ✗ |
+| `undisposed_controller` ⚠️ | `AnimationController`, `TextEditingController`, `ScrollController`, `PageController`, `TabController`, `FocusNode`, `ValueNotifier`/`ChangeNotifier`, `StreamSubscription`, `Timer` created inside a `State` that nobody calls `dispose()`/`cancel()` on | Close it in `dispose()` | ✅ adds the line (and creates `dispose()` if it doesn't exist) |
+| `image_without_cache_size` | `Image.network/asset/file/memory` without `cacheWidth`/`cacheHeight`, and `NetworkImage(...)` not wrapped in a `ResizeImage` | Decode the image at the size it will be shown at | ✗ |
+| `prefer_list_builder` | `ListView(children:)`/`GridView(children:)`, or a `Column`/`Row` inside a `SingleChildScrollView`, whose children come from `.map(...)`, `List.generate` or `for` | `ListView.builder` / `GridView.builder` | ✅ for the `ListView(children: xs.map(...).toList())` shape |
+| `avoid_animated_opacity_widget` | `Opacity` whose value is `animation.value`, or inside the `builder` of an `AnimatedBuilder` | `FadeTransition` | ✗ |
+| `prefer_riverpod_select` | `final s = ref.watch(p);` and then you only read `s.count` | `ref.watch(p.select((v) => v.count))` | ✅ |
+| `avoid_setstate_large_subtree` | `setState` in a `State` whose `build` is more than 60 lines or more than 25 widgets | `ValueNotifier` + `ValueListenableBuilder`, or a smaller widget | ✗ |
+| `avoid_heavy_work_in_build` | Inside `build`: `jsonDecode`, `RegExp(...)`, `DateFormat(...)`, `NumberFormat(...)`, `.sort()`, `readAsStringSync` and friends | Compute it once (initState, a field, `static final`, a provider) | ✗ |
 
-⚠️ = warning، والباقي info. كل القواعد **شغالة لوحدها** من أول ما تفعّل الباكدج.
+⚠️ = warning; the rest are info. All rules are **on by default** as soon as you enable the package.
 
-## 📦 التسطيب
+## 📦 Installation
 
-محتاج **Dart 3.11+** (Flutter 3.41 أو أحدث). في `analysis_options.yaml` بتاع مشروعك
-(في الـ root، مش في فولدر جوه)، ضيف `plugins:` كـ section لوحده على أول مستوى:
-
-</div>
+Requires **Dart 3.11+** (Flutter 3.41 or newer). In your project's `analysis_options.yaml`
+(at the root, not in a subfolder), add `plugins:` as its own top-level section:
 
 ```yaml
 plugins:
-  flutter_perf_lints:
-    git: https://github.com/youssef336/flutter_perf_lints
+  flutter_perf_lints: ^0.1.0
 ```
 
-<div dir="rtl">
-
-ولو عايز تثبّت نسخة معينة:
-
-</div>
+To pin a specific version:
 
 ```yaml
 plugins:
-  flutter_perf_lints:
-    git:
-      url: https://github.com/youssef336/flutter_perf_lints
-      ref: v0.1.0
+  flutter_perf_lints: ^0.1.0
 ```
 
-<div dir="rtl">
+- You **don't** need to add it to `pubspec.yaml` or `dev_dependencies`: the analysis server fetches it by itself.
+- After any change to `plugins:`, **restart the analysis server** (in VS Code:
+  "Dart: Restart Analysis Server"; in Android Studio: the restart button in the Dart Analysis tab).
+- The first time takes a few seconds while the plugin is built; after that it is cached.
 
-- **مش** محتاج تضيفها في `pubspec.yaml` ولا `dev_dependencies`: الـ analysis server بيجيبها لوحده.
-- بعد أي تعديل في `plugins:` **اعمل restart للـ analysis server** (في VS Code:
-  «Dart: Restart Analysis Server»، وفي Android Studio: زرار الـ restart في تاب Dart Analysis).
-- أول مرة بتاخد ثواني لحد ما الـ plugin يتبني، وبعد كده بيبقى cached.
+## 🔕 Turning a rule off
 
-## 🔕 تقفل قاعدة
-
-قاعدة معينة للمشروع كله:
-
-</div>
+A specific rule for the whole project:
 
 ```yaml
 plugins:
-  flutter_perf_lints:
-    git: https://github.com/youssef336/flutter_perf_lints
+  flutter_perf_lints: ^0.1.0
     diagnostics:
       avoid_heavy_work_in_build: false
       prefer_riverpod_select: false
 ```
 
-<div dir="rtl">
-
-أو تغيّر درجتها (`error` / `warning` / `info`):
-
-</div>
+Or change its severity (`error` / `warning` / `info`):
 
 ```yaml
     diagnostics:
       undisposed_controller: error
 ```
 
-<div dir="rtl">
-
-أو في سطر واحد / فايل واحد (لاحظ اسم الـ plugin قبل القاعدة):
-
-</div>
+Or for a single line / a single file (note the plugin name before the rule):
 
 ```dart
 // ignore: flutter_perf_lints/image_without_cache_size
@@ -116,13 +95,9 @@ Image.asset('assets/logo.png'),
 // ignore_for_file: flutter_perf_lints/prefer_list_builder
 ```
 
-<div dir="rtl">
+## 🧪 Try it quickly
 
-## 🧪 تجربها بسرعة
-
-فولدر `example/` فيه app صغير فيه غلطة مقصودة لكل قاعدة:
-
-</div>
+The `example/` folder contains a small app with one deliberate mistake per rule:
 
 ```bash
 cd example
@@ -130,47 +105,47 @@ flutter pub get
 dart analyze
 ```
 
-<div dir="rtl">
+You should get 12 warnings from the seven rules.
 
-والمفروض يطلع 12 تحذير من السبع قواعد.
+## ❓ FAQ
 
-## ❓ أسئلة
+**Why does `dart analyze` show the warnings but `flutter analyze` doesn't?**
+Since Flutter 3.47, `flutter analyze` talks to the analysis server over LSP and exits as soon as
+the core analysis finishes, a few seconds before plugins (including this one) send their results.
+This comes from the flutter tool, not from the package: the IDE shows the warnings normally, and
+`dart analyze` waits for them. In CI, use `dart analyze`.
 
-**ليه `flutter analyze` مش بيطلّع التحذيرات و`dart analyze` بيطلّعها؟**
-من Flutter 3.47 الأمر `flutter analyze` بقى بيكلم الـ analysis server عن طريق LSP، وبيخرج أول ما
-التحليل الأساسي يخلص، قبل ما الـ plugins (ومنها دي) تبعت نتايجها بثواني. ده من أداة flutter مش من
-الباكدج: الـ IDE بيعرض التحذيرات عادي، و`dart analyze` بيستناها. في الـ CI استخدم `dart analyze`.
+**Is this a replacement for `custom_lint`?**
+Yes. It is built on Dart's official plugin system (since 3.10), so you don't need `custom_lint` in
+`dev_dependencies` or a separate command: the same `dart analyze` and the same IDE.
 
-**ده بديل لـ `custom_lint`؟**
-آه. دي مبنية على نظام الـ plugins الرسمي بتاع Dart (من 3.10)، فمش محتاج `custom_lint` في
-`dev_dependencies` ولا أمر منفصل: نفس `dart analyze` ونفس الـ IDE.
+**Do I need Riverpod for `prefer_riverpod_select`?**
+No. The rule only looks at the code (`ref.watch(...)` stored in a variable), so if you don't use
+Riverpod it will never fire.
 
-**محتاج Riverpod عشان `prefer_riverpod_select`؟**
-لأ. القاعدة بتبص على الكود بس (`ref.watch(...)` متخزّن في متغيّر)، فلو مش بتستخدم Riverpod مش
-هتطلع خالص.
+**Why does a rule fire on code I'm sure is fine?**
+The rules are heuristic and match by name, so they can be wrong in cases like:
+an `Image.asset` for an icon that is already small, a `DateFormat` in the `build` of a screen that
+is rarely built, or a controller closed in a helper that isn't called from `dispose()`. Use
+`// ignore:` for that case, or turn the rule off.
 
-**ليه قاعدة بتطلع على كود أنا متأكد إنه سليم؟**
-القواعد heuristic وبتطابق الأسماء، فممكن تطلع غلط في حالات زي:
-`Image.asset` لأيقونة صغيرة أصلًا، أو `DateFormat` في `build` لشاشة نادرًا بتتبني، أو controller
-بيتقفل في helper مش بيتنادي من `dispose()`. استخدم `// ignore:` للحالة دي، أو اقفل القاعدة.
+**Can I change the thresholds of `avoid_setstate_large_subtree`?**
+Not yet from `analysis_options.yaml` (the plugin system doesn't provide rule options so far).
+The thresholds are 60 lines / 25 widgets; if they don't suit you, turn the rule off or change its
+severity.
 
-**أقدر أغيّر حدود `avoid_setstate_large_subtree`؟**
-لسه لأ من `analysis_options.yaml` (نظام الـ plugins مش بيدّي options للقواعد لحد دلوقتي).
-الحدود 60 سطر / 25 widget، ولو مش مناسبة اقفلها أو غيّر درجتها.
+**Do the quick fixes work with `dart fix`?**
+No. The plugin system only shows them in the IDE (💡 next to the warning), not in `dart fix --apply`.
 
-**الـ quick fixes بتشتغل مع `dart fix`؟**
-لأ. نظام الـ plugins بيعرضها في الـ IDE بس (💡 جنب التحذير)، مش في `dart fix --apply`.
+## ⚖️ Limitations
 
-## ⚖️ الحدود
-
-- `undisposed_controller` بيعتبر الحاجة اتقفلت لو اتنادى عليها `dispose()`/`cancel()`/`close()`
-  في أي حتة في الـ class، أو لو اتبعتت لأي حاجة جوه `dispose()` (loop، helper). ده بيقلّل الإنذارات
-  الغلط بس ممكن يفوّت حالات.
-- controller جاي من بره (`_c = widget.controller`) مش بيتحسب، لأنه مش ملك الـ State.
-- `avoid_heavy_work_in_build` بيتجاهل الـ callbacks اللي بتبدأ بـ `on` (`onTap`، `onPressed` …)،
-  بس بيعدّ الـ builders (`itemBuilder`، `builder`) لأنها بتشتغل وقت البناء.
-
-</div>
+- `undisposed_controller` considers a resource closed if `dispose()`/`cancel()`/`close()` is called
+  on it anywhere in the class, or if it is passed to anything inside `dispose()` (a loop, a helper).
+  This reduces false alarms but can miss some cases.
+- A controller that comes from outside (`_c = widget.controller`) is not counted, because the State
+  doesn't own it.
+- `avoid_heavy_work_in_build` ignores callbacks whose names start with `on` (`onTap`, `onPressed` …),
+  but does count builders (`itemBuilder`, `builder`) because they run at build time.
 
 ## 🛠 Tech stack
 
