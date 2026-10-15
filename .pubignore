@@ -1,0 +1,15 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+build/
+pubspec.lock
+coverage/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# README banner (linked by absolute URL, not shipped)
+screenshots/
